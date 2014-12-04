@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="api_token_link">http://www.hktvmall.com/ott/token</string>
+    <string name="api_playlist_link">http://ott-www.hktvmall.com/api/playlist/request</string>
+
+    <string name="param_secret_key">43e814b31f8764756672c1cd1217d775</string>
+    <string name="param_key_index">12</string>
+    <string name="param_device">USB Android TV</string>
+
+    <string name="api_playlist_request">playlist/request</string>
+    <string name="api_list_live">list/getLive</string>
+    <string name="api_account_token">account/token</string>
+
+    <string name="api_host">http://webservices.hktv.com.hk</string>
+
+    <string name="param_lang">zh-Hant</string>
+    <string name="param_limit">1</string>
+    <string name="param_offset">0</string>
+    <string name="param_network">fixed</string>
+</resources>
