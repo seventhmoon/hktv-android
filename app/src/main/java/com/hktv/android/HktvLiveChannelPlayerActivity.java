@@ -109,6 +109,8 @@ public class HktvLiveChannelPlayerActivity extends Activity {
         setupControlsCallbacks();
         preparePlaylist();
         updateMetadata(true);
+
+        mControllers.setVisibility(View.GONE);
     }
 
     private void playPlaylist(String hlsPlaylist) {
