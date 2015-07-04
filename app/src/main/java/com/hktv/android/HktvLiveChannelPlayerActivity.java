@@ -2,18 +2,14 @@ package com.hktv.android;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Point;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.media.MediaPlayer.OnErrorListener;
 import android.media.MediaPlayer.OnPreparedListener;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.provider.Settings;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Display;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
@@ -24,23 +20,15 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.VideoView;
 
-import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
-import com.android.volley.toolbox.JsonObjectRequest;
+import com.hktv.android.api.AccountTokenResponseModel;
+import com.hktv.android.api.PlaylistRequestResponseModel;
+import com.hktv.android.api.WebServiceManager;
 
-import org.apache.commons.codec.binary.Hex;
-import org.apache.commons.codec.digest.DigestUtils;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.TreeMap;
 
 public class HktvLiveChannelPlayerActivity extends Activity {
 
@@ -93,24 +81,28 @@ public class HktvLiveChannelPlayerActivity extends Activity {
             }
         }
     };
+    private WebServiceManager mWebServiceManager;
     private int mDuration;
     private DisplayMetrics mMetrics;
+//    private Response.Listener<JSONObject> getPlaylistListener =  new Response.Listener<JSONObject>() {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_player);
-
+        mWebServiceManager = new WebServiceManager(this.getApplicationContext());
         mMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(mMetrics);
 
         loadViews();
         setupController();
         setupControlsCallbacks();
-        preparePlaylist();
+//        preparePlaylist();
+        mWebServiceManager.getAccountToken(new MyGetTokenListener(), new MyErrorListener());
         updateMetadata(true);
 
         mControllers.setVisibility(View.GONE);
+        mWebServiceManager = new WebServiceManager(this.getApplicationContext());
     }
 
     private void playPlaylist(String hlsPlaylist) {
@@ -137,7 +129,6 @@ public class HktvLiveChannelPlayerActivity extends Activity {
             }
         }
     }
-
 
     private void startVideoPlayer() {
         Bundle b = getIntent().getExtras();
@@ -387,11 +378,6 @@ public class HktvLiveChannelPlayerActivity extends Activity {
         }
     }
 
-    /*
-     * @Override public boolean onKeyDown(int keyCode, KeyEvent event) { return
-     * super.onKeyDown(keyCode, event); }
-     */
-
     private void updateMetadata(boolean visible) {
         mVideoView.invalidate();
     }
@@ -400,6 +386,11 @@ public class HktvLiveChannelPlayerActivity extends Activity {
     public boolean onOptionsItemSelected(MenuItem item) {
         return true;
     }
+
+    /*
+     * @Override public boolean onKeyDown(int keyCode, KeyEvent event) { return
+     * super.onKeyDown(keyCode, event); }
+     */
 
     private void loadViews() {
         mVideoView = (VideoView) findViewById(R.id.videoView);
@@ -414,198 +405,51 @@ public class HktvLiveChannelPlayerActivity extends Activity {
         mVideoView.setOnClickListener(mPlayPauseHandler);
     }
 
-    private String getSignature(String apiName, long timestamp, TreeMap<String, String> map) {
-        StringBuffer sb = new StringBuffer();
-        sb.append(apiName);
-        for (String param : map.values()) {
-            sb.append(param);
-        }
-        sb.append(getString(R.string.param_secret_key));
-        sb.append(timestamp);
-
-        String plain = sb.toString();
-
-        Log.d("TAG", plain);
-
-        return new String(Hex.encodeHex(DigestUtils.md5(plain)));
-    }
-
-    private String toUrlParams(Map<String, String> params) {
-        StringBuffer sb = new StringBuffer();
-        for (String key : params.keySet()) {
-            try {
-                sb.append("&" + key + "=" + URLEncoder.encode(params.get(key), "utf-8"));
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
-        }
-        return sb.toString().substring(1);
-    }
-
-    private String getSignature(String apiName, long timestamp, String... params) {
-        StringBuffer sb = new StringBuffer();
-        sb.append(apiName);
-        for (String param : params) {
-            sb.append(param);
-        }
-        sb.append(getString(R.string.param_secret_key));
-        sb.append(timestamp);
-
-        String plain = sb.toString();
-
-        Log.d("TAG", plain);
-
-        return new String(Hex.encodeHex(DigestUtils.md5(plain)));
-    }
-
-    private void preparePlaylist() {
-
-
-        String apiName = getString(R.string.api_account_token);
-        String url = getString(R.string.api_host) + "/" + apiName;
-        long timestamp = System.currentTimeMillis() / 1000l;
-        String signature = getSignature("account/token", timestamp, getString(R.string.param_key_index), "0");
-
-        JSONObject obj = new JSONObject();
-        try {
-            obj.put("muid", "0");
-            obj.put("ts", String.valueOf(timestamp));
-            obj.put("ki", getString(R.string.param_key_index));
-            obj.put("s", signature);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        Log.d("TAG", obj.toString());
-
-        JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.POST,
-                url, obj,
-                new Response.Listener<JSONObject>() {
-
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        Log.d(TAG, response.toString());
-
-                        try {
-                            String token = response.getString("token");
-                            getPlaylist(token);
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-
-                    }
-                }, new Response.ErrorListener() {
-
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.d(TAG, "Error: " + error.getMessage());
-
-            }
-        }) {
-
-
-        };
-
-// Adding request to request queue
-        MainApplication.getInstance().addToRequestQueue(jsonObjReq, apiName);
-    }
-
-    private void getPlaylist(String token) {
-        String apiName = getString(R.string.api_playlist_request);
-        String url = getString(R.string.api_host) + "/" + apiName;
-
-        long timestamp = System.currentTimeMillis() / 1000l;
-        String network = getString(R.string.param_network);
-        String manufacturer = Build.MANUFACTURER.toUpperCase();
-        String model = Build.MODEL.toUpperCase();
-        String release = Build.VERSION.RELEASE;
-        String deviceId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
-        String device = getString(R.string.param_device);
-
-        Display display = getWindowManager().getDefaultDisplay();
-        Point size = new Point();
-        display.getSize(size);
-        int screenWidth = size.x;
-        int screenHeight = size.y;
-        int resolutionMax = Math.min(screenHeight, screenWidth);
-
-        TreeMap<String, String> treeMap = new TreeMap<String, String>();
-        treeMap.put("uid", "1");
-        treeMap.put("vid", "1");
-        treeMap.put("d", device);
-        treeMap.put("mf", manufacturer);
-        treeMap.put("mdl", model);
-        treeMap.put("os", release);
-        treeMap.put("udid", Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID));
-        treeMap.put("mxres", String.valueOf(resolutionMax));
-        treeMap.put("net", network);
-        treeMap.put("t", token);
-        treeMap.put("ki", getString(R.string.param_key_index));
-
-        String signature = getSignature(apiName, timestamp, treeMap);
-        treeMap.put("s", signature);
-        treeMap.put("ts", String.valueOf(timestamp));
-
-//        final Map<String, String> paramMap = new HashMap<String, String>(treeMap);
-
-        Log.d(TAG, treeMap.toString());
-
-        String requestUrl = url + "?" + toUrlParams(treeMap);
-        Log.d(TAG, requestUrl);
-
-        JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.GET,
-                requestUrl, null,
-                new Response.Listener<JSONObject>() {
-
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        Log.d(TAG, response.toString());
-                        try {
-                            String playlist = response.getString("m3u8");
-                            playPlaylist(playlist);
-//                            mSelectedMovie = (Movie) getIntent().getSerializableExtra(getResources().getString(R.string.movie));
-//                            mSelectedMovie.setVideoUrl(playlist);
-//                            startVideoPlayer();
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-
-
-//                        mTextViewA.setText(response.toString());
-
-//                        try {
-////                            String token = response.getString("token");
-//
-//
-//                        } catch (JSONException e) {
-//                            e.printStackTrace();
-//                        }
-
-//                        pDialog.hide();
-                    }
-                }, new Response.ErrorListener() {
-
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                VolleyLog.d(TAG, "Error: " + error.getMessage());
-//                mTextViewA.setText(error.getMessage());
-//                pDialog.hide();
-            }
-        }) {
-
-
-        };
-
-// Adding request to request queue
-        MainApplication.getInstance().addToRequestQueue(jsonObjReq, apiName);
-    }
-
     /*
      * List of various states that we can be in
      */
     public static enum PlaybackState {
         PLAYING, PAUSED, BUFFERING, IDLE;
+    }
+
+    private class MyGetPlaylistListener implements Response.Listener<PlaylistRequestResponseModel> {
+
+        @Override
+//        public void onResponse(JSONObject jsonResponse) {
+        public void onResponse(PlaylistRequestResponseModel response) {
+            Log.d(TAG, response.toString());
+//            try {
+            String playlist = response.getPlaylist();
+            playPlaylist(playlist);
+//            } catch (JSONException e) {
+//                e.printStackTrace();
+//            }
+        }
+    }
+
+    private class MyErrorListener implements Response.ErrorListener{
+
+        @Override
+        public void onErrorResponse(VolleyError error) {
+            VolleyLog.d(TAG, "Error: " + error.getMessage());
+        }
+    }
+
+    private class MyGetTokenListener implements Response.Listener<AccountTokenResponseModel>{
+        @Override
+        public void onResponse(AccountTokenResponseModel response) {
+            Log.d(TAG, response.toString());
+
+//            try {
+//                String token = response.getString("token");
+                String token = response.getToken();
+            mWebServiceManager.getPlaylist(1, 1, token, new MyGetPlaylistListener(), new MyErrorListener());
+
+//            } catch (JSONException e) {
+//                e.printStackTrace();
+//            }
+
+        }
     }
 
     private class HideControllersTask extends TimerTask {
@@ -656,5 +500,3 @@ public class HktvLiveChannelPlayerActivity extends Activity {
 
 
 }
-
-////////

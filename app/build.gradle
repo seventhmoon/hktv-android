@@ -2,19 +2,19 @@ apply plugin: 'com.android.application'
 
 
 android {
-    compileSdkVersion 21
-    buildToolsVersion "21.1.1"
+    compileSdkVersion 22
+    buildToolsVersion "22.0.1"
 
     defaultConfig {
         applicationId "com.hktv.android"
         minSdkVersion 21
-        targetSdkVersion 21
+        targetSdkVersion 22
         versionCode 1
         versionName "1.0"
     }
     buildTypes {
         release {
-            runProguard false
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
@@ -22,10 +22,12 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:recyclerview-v7:21.0.2'
-    compile 'com.android.support:leanback-v17:21.0.2'
-    compile 'com.android.support:appcompat-v7:21.0.2'
+    compile 'com.android.support:recyclerview-v7:22.0.0'
+    compile 'com.android.support:leanback-v17:22.0.0'
+    compile 'com.android.support:appcompat-v7:22.2.0'
     compile 'com.squareup.picasso:picasso:2.3.2'
-    compile project(':volley')
+    compile 'com.google.code.gson:gson:2.3'
     compile files('libs/commons-codec-1.10.jar')
+    compile 'com.mcxiaoke.volley:library:1.0.16'
+    compile 'com.google.android.gms:play-services:7.5.0'
 }
