@@ -1,4 +1,4 @@
-package com.hktv.android.api;
+package com.hktv.model;
 
 
 import com.google.gson.annotations.SerializedName;

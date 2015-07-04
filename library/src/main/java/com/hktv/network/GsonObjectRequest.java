@@ -1,4 +1,4 @@
-package com.hktv.android.network;
+package com.hktv.network;
 
 import com.android.volley.NetworkResponse;
 import com.android.volley.ParseError;
