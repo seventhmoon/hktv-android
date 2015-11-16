@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">HKTV Android</string>
+    <string name="app_name">HKTV OTT</string>
     <string name="browse_title"><![CDATA[Videos by Your Company]]></string>
     <string name="related_movies">Related Videos</string>
     <string name="vertical_grid_title"><![CDATA[Vertical Video Grid]]></string>
@@ -35,5 +35,10 @@
     <string name="video_error_server_unaccessible">Media server was not reachable</string>
     <string name="video_error_unknown_error">Failed to load video</string>
     <string name="oops">Oops</string>
+
+    <string name="text_version">Version</string>
+    <string name="simple_setup_message">Do you want to register detected channels?</string>
+    <string name="hktv_setup_title">Setup HKTV Input</string>
+    <string name="hktv_input_label" translatable="false">HKTV</string>
 
 </resources>

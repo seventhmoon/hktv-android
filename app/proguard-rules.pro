@@ -15,3 +15,24 @@
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 #   public *;
 #}
+-keep class android.support.design.** { *; }
+-keep interface android.support.design.** { *; }
+-keep class android.support.v7.** { *; }
+-keep interface android.support.v7.** { *; }
+-keep class android.support.v4.** { *; }
+-keep interface android.support.v4.** { *; }
+-keep public class com.google.android.gms.**
+-dontwarn android.support.v7.**
+-dontwarn com.google.android.gms.**
+-dontwarn android.support.**
+-dontwarn com.github.**
+-dontwarn com.squareup.picasso.**
+-dontwarn com.etsy.android.grid.**
+
+-keep class org.apache.http.** { *; }
+-keep class org.apache.commons.codec.** { *; }
+-keep class org.apache.commons.logging.** { *; }
+-keep class android.net.compatibility.** { *; }
+-keep class android.net.http.** { *; }
+-dontwarn org.apache.http.**
+-dontwarn android.webkit.**

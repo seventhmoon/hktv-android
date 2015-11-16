@@ -6,14 +6,16 @@ import android.os.Build;
 import android.provider.Settings;
 
 import com.android.volley.Request;
+import com.android.volley.RequestQueue;
 import com.android.volley.Response;
-import com.hktv.android.MainApplication;
-import com.hktv.android.R;
-import com.hktv.android.Utils;
-import com.hktv.android.network.GsonObjectRequest;
 
-import org.apache.commons.codec.binary.Hex;
-import org.apache.commons.codec.digest.DigestUtils;
+
+import com.hktv.R;
+import com.hktv.model.AccountTokenResponseModel;
+import com.hktv.model.PlaylistRequestResponseModel;
+import com.hktv.network.GsonObjectRequest;
+import com.hktv.util.Utils;
+
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -32,11 +34,11 @@ public class WebServiceManager {
     private Context mContext;
     private String mDeviceId;// = Settings.Secure.getString(mContext.getContentResolver(), Settings.Secure.ANDROID_ID);
     private String mDevice;// = mContext.getString(R.string.param_device);
+    private RequestQueue mRequestQueue;
 
-
-    public WebServiceManager(Context context) {
-        this.mContext = context;
-
+    public WebServiceManager(Context context, RequestQueue requestQueue) {
+        mContext = context;
+        mRequestQueue = requestQueue;
         mDeviceId = Settings.Secure.getString(mContext.getContentResolver(), Settings.Secure.ANDROID_ID);
         mDevice = mContext.getString(R.string.param_device);
     }
@@ -83,7 +85,8 @@ public class WebServiceManager {
                 url, AccountTokenResponseModel.class, obj.toString(), listener, errorListener);
 
 // Adding request to request queue
-        MainApplication.getInstance().addToRequestQueue(gsonReq, apiName);
+//        MainApplication.getInstance().addToRequestQueue(gsonReq, apiName);
+        mRequestQueue.add(gsonReq);
     }
 
     public void getPlaylist(long userId, long videoId, String token, Response.Listener<PlaylistRequestResponseModel> listener, Response.ErrorListener errorListener) {
@@ -129,7 +132,8 @@ public class WebServiceManager {
                 requestUrl, PlaylistRequestResponseModel.class, null, listener, errorListener);
 
 // Adding request to request queue
-        MainApplication.getInstance().addToRequestQueue(gsonObjReq, apiName);
+//        MainApplication.getInstance().addToRequestQueue(gsonObjReq, apiName);
+        mRequestQueue.add(gsonObjReq);
     }
 
     private String getSignature(String apiName, long timestamp, TreeMap<String, String> map) {
@@ -145,7 +149,8 @@ public class WebServiceManager {
 
 //        Log.d("TAG", plain);
 
-        return new String(Hex.encodeHex(DigestUtils.md5(plain)));
+//        return new String(Hex.encodeHex(DigestUtils.md5(plain)));
+        return md5String(plain);
     }
 
     private String toUrlParams(Map<String, String> params) {
@@ -158,6 +163,20 @@ public class WebServiceManager {
             }
         }
         return sb.toString().substring(1);
+    }
+
+    private String md5String(String md5) {
+        try {
+            java.security.MessageDigest md = java.security.MessageDigest.getInstance("MD5");
+            byte[] array = md.digest(md5.getBytes());
+            StringBuffer sb = new StringBuffer();
+            for (int i = 0; i < array.length; ++i) {
+                sb.append(Integer.toHexString((array[i] & 0xFF) | 0x100).substring(1,3));
+            }
+            return sb.toString();
+        } catch (java.security.NoSuchAlgorithmException e) {
+        }
+        return null;
     }
 
 }

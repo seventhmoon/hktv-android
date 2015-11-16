@@ -1,8 +1,6 @@
-package com.hktv.android;
+package com.hktv.util;
 
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.graphics.Point;
 import android.view.Display;
 import android.view.WindowManager;
@@ -35,25 +33,25 @@ public class Utils {
         return new Point(width, height);
     }
 
-    /**
-     * Shows an error dialog with a given text message.
-     *
-     * @param context
-     * @param errorString
-     */
-
-    public static final void showErrorDialog(Context context, String errorString) {
-        new AlertDialog.Builder(context).setTitle(R.string.error)
-                .setMessage(errorString)
-                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int id) {
-                        dialog.cancel();
-                    }
-                })
-                .create()
-                .show();
-    }
+//    /**
+//     * Shows an error dialog with a given text message.
+//     *
+//     * @param context
+//     * @param errorString
+//     */
+//
+//    public static final void showErrorDialog(Context context, String errorString) {
+//        new AlertDialog.Builder(context).setTitle(R.string.error)
+//                .setMessage(errorString)
+//                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int id) {
+//                        dialog.cancel();
+//                    }
+//                })
+//                .create()
+//                .show();
+//    }
 
     /**
      * Shows a (long) toast
