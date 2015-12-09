@@ -61,25 +61,11 @@ public class WebServiceManager {
         com.google.gson.JsonObject obj = new com.google.gson.JsonObject();
 
 
-//        JSONObject obj = new JSONObject();
-//        try {
+
         for (String key : treeMap.keySet()) {
 
             obj.addProperty(key, treeMap.get(key));
         }
-
-//            obj.put("muid", "0");
-//            obj.put("ts", String.valueOf(timestamp));
-//            obj.put("ki", mContext.getString(R.string.param_key_index));
-//            obj.put("s", signature);
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
-
-//        Log.d("TAG", obj.toString());
-
-//        JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.POST,
-//                url, obj, listener, errorListener);
 
         GsonObjectRequest gsonReq = new GsonObjectRequest(Request.Method.POST,
                 url, AccountTokenResponseModel.class, obj.toString(), listener, errorListener);
@@ -121,12 +107,9 @@ public class WebServiceManager {
         treeMap.put("s", signature);
         treeMap.put("ts", String.valueOf(timestamp));
 
-//        final Map<String, String> paramMap = new HashMap<String, String>(treeMap);
-
-//        Log.d(TAG, treeMap.toString());
 
         String requestUrl = url + "?" + toUrlParams(treeMap);
-//        Log.d(TAG, requestUrl);
+
 
         GsonObjectRequest gsonObjReq = new GsonObjectRequest(Request.Method.GET,
                 requestUrl, PlaylistRequestResponseModel.class, null, listener, errorListener);
@@ -147,7 +130,6 @@ public class WebServiceManager {
 
         String plain = sb.toString();
 
-//        Log.d("TAG", plain);
 
 //        return new String(Hex.encodeHex(DigestUtils.md5(plain)));
         return md5String(plain);

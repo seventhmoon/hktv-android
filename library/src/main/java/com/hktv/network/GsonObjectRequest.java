@@ -16,7 +16,6 @@ public class GsonObjectRequest<T> extends JsonRequest<T> {
 
     private final Gson gson = new Gson();
     private final Class<T> clazz;
-    //    private final Map<String, String> headers;
     private final Response.Listener<T> listener;
 
     /**
@@ -30,7 +29,6 @@ public class GsonObjectRequest<T> extends JsonRequest<T> {
                              Response.Listener<T> listener, Response.ErrorListener errorListener) {
         super(method, url, json, listener, errorListener);
         this.clazz = clazz;
-//        this.headers = headers;
         this.listener = listener;
     }
 
