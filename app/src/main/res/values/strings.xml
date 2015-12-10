@@ -40,5 +40,6 @@
     <string name="simple_setup_message">Do you want to register detected channels?</string>
     <string name="hktv_setup_title">Setup HKTV Input</string>
     <string name="hktv_input_label" translatable="false">HKTV</string>
+    <string name="text_network_error">Unable to connect to Server.</string>
 
 </resources>
