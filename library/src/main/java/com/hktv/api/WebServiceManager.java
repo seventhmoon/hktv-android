@@ -43,10 +43,7 @@ public class WebServiceManager {
         mDevice = mContext.getString(R.string.param_device);
     }
 
-
     public void getAccountToken(Response.Listener<AccountTokenResponseModel> listener, Response.ErrorListener errorListener) {
-
-
         String apiName = mContext.getString(R.string.api_account_token);
         String url = mContext.getString(R.string.api_host) + "/" + apiName;
         long timestamp = System.currentTimeMillis() / 1000l;
@@ -60,18 +57,14 @@ public class WebServiceManager {
 
         com.google.gson.JsonObject obj = new com.google.gson.JsonObject();
 
-
-
         for (String key : treeMap.keySet()) {
-
             obj.addProperty(key, treeMap.get(key));
         }
 
         GsonObjectRequest gsonReq = new GsonObjectRequest(Request.Method.POST,
                 url, AccountTokenResponseModel.class, obj.toString(), listener, errorListener);
 
-// Adding request to request queue
-//        MainApplication.getInstance().addToRequestQueue(gsonReq, apiName);
+        // Adding request to request queue
         mRequestQueue.add(gsonReq);
     }
 
@@ -107,15 +100,12 @@ public class WebServiceManager {
         treeMap.put("s", signature);
         treeMap.put("ts", String.valueOf(timestamp));
 
-
         String requestUrl = url + "?" + toUrlParams(treeMap);
-
 
         GsonObjectRequest gsonObjReq = new GsonObjectRequest(Request.Method.GET,
                 requestUrl, PlaylistRequestResponseModel.class, null, listener, errorListener);
 
-// Adding request to request queue
-//        MainApplication.getInstance().addToRequestQueue(gsonObjReq, apiName);
+        // Adding request to request queue
         mRequestQueue.add(gsonObjReq);
     }
 
@@ -130,8 +120,6 @@ public class WebServiceManager {
 
         String plain = sb.toString();
 
-
-//        return new String(Hex.encodeHex(DigestUtils.md5(plain)));
         return md5String(plain);
     }
 
