@@ -30,8 +30,8 @@ public class WebServiceManager {
     private final String MODEL = Build.MODEL.toUpperCase();
     private final String RELEASE = Build.VERSION.RELEASE;
     private Context mContext;
-    private String mDeviceId;// = Settings.Secure.getString(mContext.getContentResolver(), Settings.Secure.ANDROID_ID);
-    private String mDevice;// = mContext.getString(R.string.param_device);
+    private String mDeviceId;
+    private String mDevice;
     private RequestQueue mRequestQueue;
 
     public WebServiceManager(Context context, RequestQueue requestQueue) {
