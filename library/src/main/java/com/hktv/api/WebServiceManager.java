@@ -9,13 +9,11 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 
-
 import com.hktv.R;
 import com.hktv.model.AccountTokenResponseModel;
 import com.hktv.model.PlaylistRequestResponseModel;
 import com.hktv.network.GsonObjectRequest;
 import com.hktv.util.Utils;
-
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -44,14 +42,15 @@ public class WebServiceManager {
     }
 
     public void getAccountToken(Response.Listener<AccountTokenResponseModel> listener, Response.ErrorListener errorListener) {
-        String apiName = mContext.getString(R.string.api_account_token);
-        String url = mContext.getString(R.string.api_host) + "/" + apiName;
         long timestamp = System.currentTimeMillis() / 1000l;
         long mUId = 0;
-        TreeMap<String, String> treeMap = new TreeMap<String, String>();
-        treeMap.put("muid", String.valueOf(mUId));
-        treeMap.put("ki", mContext.getString(R.string.param_key_index));
+        String apiName = mContext.getString(R.string.api_account_token);
+        String url = mContext.getString(R.string.api_host) + "/" + apiName;
         String signature = getSignature(apiName, timestamp, treeMap);
+        
+        TreeMap<String, String> treeMap = new TreeMap<String, String>();
+        treeMap.put("ki", mContext.getString(R.string.param_key_index));
+        treeMap.put("muid", String.valueOf(mUId));
         treeMap.put("s", signature);
         treeMap.put("ts", String.valueOf(timestamp));
 
@@ -69,17 +68,16 @@ public class WebServiceManager {
     }
 
     public void getPlaylist(long userId, long videoId, String token, Response.Listener<PlaylistRequestResponseModel> listener, Response.ErrorListener errorListener) {
+        long timestamp = System.currentTimeMillis() / 1000l;
         String apiName = mContext.getString(R.string.api_playlist_request);
         String url = mContext.getString(R.string.api_host) + "/" + apiName;
-
-        long timestamp = System.currentTimeMillis() / 1000l;
         String network = mContext.getString(R.string.param_network);
         String manufacturer = Build.MANUFACTURER.toUpperCase();
         String model = Build.MODEL.toUpperCase();
         String release = Build.VERSION.RELEASE;
         String deviceId = Settings.Secure.getString(mContext.getContentResolver(), Settings.Secure.ANDROID_ID);
         String device = mContext.getString(R.string.param_device);
-
+        String signature = getSignature(apiName, timestamp, treeMap);
         Point point = Utils.getDisplaySize(mContext);
         int resolutionMax = Math.min(point.x, point.y);
 
@@ -95,8 +93,6 @@ public class WebServiceManager {
         treeMap.put("net", network);
         treeMap.put("t", token);
         treeMap.put("ki", mContext.getString(R.string.param_key_index));
-
-        String signature = getSignature(apiName, timestamp, treeMap);
         treeMap.put("s", signature);
         treeMap.put("ts", String.valueOf(timestamp));
 
